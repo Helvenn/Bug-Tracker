@@ -1,3 +1,2 @@
 # Bug-Tracker
-# Initnial Commit
-Testing password storage
+Bug tracking application.
