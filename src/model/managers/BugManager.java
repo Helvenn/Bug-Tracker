@@ -114,7 +114,7 @@ public class BugManager {
 			StringBuilder query = new StringBuilder();
 			query.append("SELECT * FROM bug");
 			query.append("WHERE project_id = :id");
-			list = session.createQuery(query.toString()).setParameter("id", projectId).list();
+			list = session.createQuery(query.toString()).setParameter("id", finish).list();
 
 			tx.commit();
 		} catch (Exception e) {
