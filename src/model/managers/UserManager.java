@@ -74,7 +74,7 @@ public class UserManager {
 		return user;
 	}
 
-	public void updateName(String userName, String firstName, String lastName) {
+	public boolean updateName(String userName, String firstName, String lastName) {
 		Session session = factory.openSession();
 		Transaction tx = null;
 
@@ -87,6 +87,7 @@ public class UserManager {
 				user.setLastName(lastName);
 
 			tx.commit();
+			return true;
 		} catch (Exception e) {
 			if (tx != null)
 				tx.rollback();
@@ -94,5 +95,6 @@ public class UserManager {
 		} finally {
 			session.close();
 		}
+		return false;
 	}
 }

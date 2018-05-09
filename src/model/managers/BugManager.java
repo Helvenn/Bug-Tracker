@@ -172,7 +172,7 @@ public class BugManager {
 		return list;
 	}
 
-	public void updateTimeResolved(String userName, Timestamp time) {
+	public boolean updateTimeResolved(String userName, Timestamp time) {
 		Session session = factory.openSession();
 		Transaction tx = null;
 
@@ -182,6 +182,7 @@ public class BugManager {
 			bug.setTimeResolved(time);
 
 			tx.commit();
+			return true;
 		} catch (Exception e) {
 			if (tx != null)
 				tx.rollback();
@@ -189,6 +190,7 @@ public class BugManager {
 		} finally {
 			session.close();
 		}
+		return false;
 	}
 
 }
