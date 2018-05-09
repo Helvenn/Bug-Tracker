@@ -1,5 +1,7 @@
 package model.managers;
 
+import java.util.List;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -73,7 +75,7 @@ public class RoleManager {
 		}
 		return false;
 	}
-	
+
 	public boolean updateName(int id, String newName) {
 		Session session = factory.openSession();
 		Transaction tx = null;
@@ -93,5 +95,27 @@ public class RoleManager {
 			session.close();
 		}
 		return false;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Role> getAll() {
+		Session session = factory.openSession();
+		Transaction tx = null;
+		List<Role> list = null;
+
+		try {
+			tx = session.beginTransaction();
+			String query = "SELECT * FROM user_role";
+			list = (List<Role>) session.createQuery(query).list();
+
+			tx.commit();
+		} catch (Exception e) {
+			if (tx != null)
+				tx.rollback();
+			e.printStackTrace();
+		} finally {
+			session.close();
+		}
+		return list;
 	}
 }

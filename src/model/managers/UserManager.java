@@ -1,5 +1,7 @@
 package model.managers;
 
+import java.util.List;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -96,5 +98,27 @@ public class UserManager {
 			session.close();
 		}
 		return false;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<AppUser> getAll() {
+		Session session = factory.openSession();
+		Transaction tx = null;
+		List<AppUser> list = null;
+
+		try {
+			tx = session.beginTransaction();
+			String query = "SELECT * FROM app_user";
+			list = (List<AppUser>) session.createQuery(query).list();
+
+			tx.commit();
+		} catch (Exception e) {
+			if (tx != null)
+				tx.rollback();
+			e.printStackTrace();
+		} finally {
+			session.close();
+		}
+		return list;
 	}
 }

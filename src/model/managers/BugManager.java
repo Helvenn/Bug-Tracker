@@ -79,30 +79,6 @@ public class BugManager {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Bug> getByProject(int projectId) {
-		Session session = factory.openSession();
-		Transaction tx = null;
-		List<Bug> list = null;
-
-		try {
-			tx = session.beginTransaction();
-			StringBuilder query = new StringBuilder();
-			query.append("SELECT * FROM bug");
-			query.append("WHERE project_id = :id");
-			list = session.createQuery(query.toString()).setParameter("id", projectId).list();
-
-			tx.commit();
-		} catch (Exception e) {
-			if (tx != null)
-				tx.rollback();
-			e.printStackTrace();
-		} finally {
-			session.close();
-		}
-		return list;
-	}
-
-	@SuppressWarnings("unchecked")
 	public List<Bug> getAddedByTimeframe(Timestamp start, Timestamp finish) {
 		Session session = factory.openSession();
 		Transaction tx = null;
@@ -191,6 +167,28 @@ public class BugManager {
 			session.close();
 		}
 		return false;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Bug> getAll() {
+		Session session = factory.openSession();
+		Transaction tx = null;
+		List<Bug> list = null;
+
+		try {
+			tx = session.beginTransaction();
+			String query = "SELECT * FROM bug";
+			list = (List<Bug>) session.createQuery(query).list();
+
+			tx.commit();
+		} catch (Exception e) {
+			if (tx != null)
+				tx.rollback();
+			e.printStackTrace();
+		} finally {
+			session.close();
+		}
+		return list;
 	}
 
 }

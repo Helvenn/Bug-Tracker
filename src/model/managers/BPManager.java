@@ -1,5 +1,7 @@
 package model.managers;
 
+import java.util.List;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -13,7 +15,7 @@ public class BPManager {
 	public BPManager(SessionFactory factory) {
 		this.factory = factory;
 	}
-	
+
 	public BPKey add(BugProject bp) {
 		Session session = factory.openSession();
 		Transaction tx = null;
@@ -21,7 +23,7 @@ public class BPManager {
 
 		try {
 			tx = session.beginTransaction();
-			key = (BPKey)session.save(bp);
+			key = (BPKey) session.save(bp);
 
 			tx.commit();
 		} catch (Exception e) {
@@ -33,16 +35,16 @@ public class BPManager {
 		}
 		return key;
 	}
-	
+
 	public BugProject get(BPKey key) {
 		Session session = factory.openSession();
 		Transaction tx = null;
 		BugProject bp = null;
-		
+
 		try {
 			tx = session.beginTransaction();
-			bp = (BugProject)session.get(BugProject.class, key);
-			
+			bp = (BugProject) session.get(BugProject.class, key);
+
 			tx.commit();
 		} catch (Exception e) {
 			if (tx != null)
@@ -53,14 +55,14 @@ public class BPManager {
 		}
 		return bp;
 	}
-	
+
 	public boolean delete(BPKey key) {
 		Session session = factory.openSession();
 		Transaction tx = null;
 
 		try {
 			tx = session.beginTransaction();
-			BugProject bp = (BugProject)session.get(BugProject.class, key);
+			BugProject bp = (BugProject) session.get(BugProject.class, key);
 			session.delete(bp);
 
 			tx.commit();
@@ -74,14 +76,14 @@ public class BPManager {
 		}
 		return false;
 	}
-	
+
 	public boolean updateState(BPKey key, int stateId) {
 		Session session = factory.openSession();
 		Transaction tx = null;
 
 		try {
 			tx = session.beginTransaction();
-			BugProject bp = (BugProject)session.get(BugProject.class, key);
+			BugProject bp = (BugProject) session.get(BugProject.class, key);
 			bp.setStateId(stateId);
 
 			tx.commit();
@@ -94,5 +96,27 @@ public class BPManager {
 			session.close();
 		}
 		return false;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<BugProject> getAll() {
+		Session session = factory.openSession();
+		Transaction tx = null;
+		List<BugProject> list = null;
+
+		try {
+			tx = session.beginTransaction();
+			String query = "SELECT * FROM bug_project";
+			list = (List<BugProject>) session.createQuery(query).list();
+
+			tx.commit();
+		} catch (Exception e) {
+			if (tx != null)
+				tx.rollback();
+			e.printStackTrace();
+		} finally {
+			session.close();
+		}
+		return list;
 	}
 }
