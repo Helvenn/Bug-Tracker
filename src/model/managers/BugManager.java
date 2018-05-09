@@ -93,7 +93,7 @@ public class BugManager {
 				throw new InvalidParameterException("Time started and time finished cannot be null");
 			}
 
-			bob.append("WHERE ");
+			bob.append(" WHERE ");
 			bob.append("time_added > :tstart");
 			bob.append(" AND ");
 			bob.append("time_added < :tfinish");
@@ -128,7 +128,7 @@ public class BugManager {
 				throw new InvalidParameterException("Time started and time finished cannot be null");
 			}
 
-			bob.append("WHERE ");
+			bob.append(" WHERE ");
 			bob.append("time_resolved > :tstart");
 			bob.append(" AND ");
 			bob.append("time_resolved < :tfinish");
@@ -179,6 +179,32 @@ public class BugManager {
 			tx = session.beginTransaction();
 			String query = "SELECT * FROM bug";
 			list = (List<Bug>) session.createQuery(query).list();
+
+			tx.commit();
+		} catch (Exception e) {
+			if (tx != null)
+				tx.rollback();
+			e.printStackTrace();
+		} finally {
+			session.close();
+		}
+		return list;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Bug> getByProject(int projectId) {
+		Session session = factory.openSession();
+		Transaction tx = null;
+		List<Bug> list = null;
+
+		try {
+			tx = session.beginTransaction();
+			StringBuilder bob = new StringBuilder();
+			bob.append("SELECT * FROM bug ");
+			bob.append("WHERE project_id = :proj");
+			String query = bob.toString();
+			
+			list = (List<Bug>) session.createQuery(query).setParameter("proj", projectId).list();
 
 			tx.commit();
 		} catch (Exception e) {

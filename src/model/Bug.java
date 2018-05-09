@@ -38,12 +38,23 @@ public class Bug implements Serializable {
 	@Column(name = "severity_id")
 	private int severityId;
 
+	@Column(name = "project_id")
+	private int projectId;
+
 	public int getId() {
 		return id;
 	}
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public int getProjectId() {
+		return projectId;
+	}
+
+	public void setProjectId(int projectId) {
+		this.projectId = projectId;
 	}
 
 	public String getName() {
@@ -105,13 +116,14 @@ public class Bug implements Serializable {
 	public Bug() {
 	}
 
-	public Bug(String name, String description, Timestamp timeAdded, int imageId, int categoryId, int severityId) {
+	public Bug(String name, String description, Timestamp timeAdded, int projectId, int imageId, int categoryId, int severityId) {
 		setCategoryId(categoryId);
 		setDescription(description);
 		setImageId(imageId);
 		setName(name);
 		setSeverityId(severityId);
 		setTimeAdded(timeAdded);
+		setProjectId(projectId);
 		setTimeResolved(null);
 	}
 
