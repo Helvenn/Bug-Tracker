@@ -172,4 +172,23 @@ public class BugManager {
 		return list;
 	}
 
+	public void updateTimeResolved(String userName, Timestamp time) {
+		Session session = factory.openSession();
+		Transaction tx = null;
+
+		try {
+			tx = session.beginTransaction();
+			Bug bug = (Bug) session.get(Bug.class, userName);
+			bug.setTimeResolved(time);
+
+			tx.commit();
+		} catch (Exception e) {
+			if (tx != null)
+				tx.rollback();
+			e.printStackTrace();
+		} finally {
+			session.close();
+		}
+	}
+
 }
