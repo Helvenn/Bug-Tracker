@@ -121,6 +121,32 @@ public class URBManager {
 	}
 	
 	@SuppressWarnings("unchecked")
+	public List<UserResolvingBug> getResolvedByUser(String userName) {
+		Session session = factory.openSession();
+		Transaction tx = null;
+		List<UserResolvingBug> list = null;
+		
+		try {
+			tx = session.beginTransaction();
+			StringBuilder bob = new StringBuilder();
+			bob.append("SELECT * FROM user_resolving_bug ");
+			bob.append("WHERE user_name = :uname");
+			String query = bob.toString();
+			
+			list = (List<UserResolvingBug>) session.createQuery(query).setParameter("uname", userName).list();
+			
+			tx.commit();
+		} catch (Exception e) {
+			if (tx != null)
+				tx.rollback();
+			e.printStackTrace();
+		} finally {
+			session.close();
+		}
+		return list;
+	}
+	
+	@SuppressWarnings("unchecked")
 	public List<UserResolvingBug> getAll() {
 		Session session = factory.openSession();
 		Transaction tx = null;
