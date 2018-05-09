@@ -22,3 +22,8 @@
 	List students = session.createQuery("FROM Student :student").setParameter("student", abc).list(); 
 
 ( find ./ -name '*.java' -print0 | xargs -0 cat ) | wc -l
+
+templates:
+	factconstr
+	transaction
+	getall
