@@ -1,6 +1,7 @@
 package model;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -23,10 +24,10 @@ public class Bug implements Serializable {
 	private String description;
 
 	@Column(name = "time_added")
-	private String timeAdded;
+	private Timestamp timeAdded;
 
 	@Column(name = "time_resolved")
-	private String timeResolved;
+	private Timestamp timeResolved;
 
 	@Column(name = "image_id")
 	private int imageId;
@@ -61,19 +62,19 @@ public class Bug implements Serializable {
 		this.description = description;
 	}
 
-	public String getTimeAdded() {
+	public Timestamp getTimeAdded() {
 		return timeAdded;
 	}
 
-	public void setTimeAdded(String timeAdded) {
+	public void setTimeAdded(Timestamp timeAdded) {
 		this.timeAdded = timeAdded;
 	}
 
-	public String getTimeResolved() {
+	public Timestamp getTimeResolved() {
 		return timeResolved;
 	}
 
-	public void setTimeResolved(String timeResolved) {
+	public void setTimeResolved(Timestamp timeResolved) {
 		this.timeResolved = timeResolved;
 	}
 
@@ -104,7 +105,7 @@ public class Bug implements Serializable {
 	public Bug() {
 	}
 
-	public Bug(String name, String description, String timeAdded, int imageId, int categoryId, int severityId) {
+	public Bug(String name, String description, Timestamp timeAdded, int imageId, int categoryId, int severityId) {
 		setCategoryId(categoryId);
 		setDescription(description);
 		setImageId(imageId);
@@ -135,7 +136,5 @@ public class Bug implements Serializable {
 			return false;
 		return true;
 	}
-	
-	
 
 }

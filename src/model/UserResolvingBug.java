@@ -1,6 +1,7 @@
 package model;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
@@ -16,13 +17,13 @@ public class UserResolvingBug implements Serializable {
 
 	@EmbeddedId
 	private URBKey id;
-	
+
 	@Column(name = "time_started")
-	private String timeStarted;
-	
+	private Timestamp timeStarted;
+
 	@Column(name = "time_finished")
-	private String timeFinished;
-	
+	private Timestamp timeFinished;
+
 	@Column(name = "comment")
 	private String comment;
 
@@ -34,19 +35,19 @@ public class UserResolvingBug implements Serializable {
 		this.id = id;
 	}
 
-	public String getTimeStarted() {
+	public Timestamp getTimeStarted() {
 		return timeStarted;
 	}
 
-	public void setTimeStarted(String timeStarted) {
+	public void setTimeStarted(Timestamp timeStarted) {
 		this.timeStarted = timeStarted;
 	}
 
-	public String getTimeFinished() {
+	public Timestamp getTimeFinished() {
 		return timeFinished;
 	}
 
-	public void setTimeFinished(String timeFinished) {
+	public void setTimeFinished(Timestamp timeFinished) {
 		this.timeFinished = timeFinished;
 	}
 
@@ -57,10 +58,11 @@ public class UserResolvingBug implements Serializable {
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
-	
-	public UserResolvingBug(){}
 
-	public UserResolvingBug(int bugId, String userName, String timeStarted, String comment) {
+	public UserResolvingBug() {
+	}
+
+	public UserResolvingBug(int bugId, String userName, Timestamp timeStarted, String comment) {
 		setId(new URBKey(bugId, userName));
 		setComment(comment);
 		setTimeStarted(timeStarted);
@@ -92,6 +94,4 @@ public class UserResolvingBug implements Serializable {
 		return true;
 	}
 
-	
-	
 }
