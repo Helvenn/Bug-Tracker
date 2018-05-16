@@ -1,5 +1,1 @@
-bin/hibernate.cfg.xml
-src/hibernate.cfg.xml
-bin/*
-util/*
-output/*
+src/main/java/hibernate.cfg.xml
