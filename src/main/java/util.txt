@@ -1,0 +1,29 @@
+	 *			SAVE
+
+	StudentTown student = new StudentTown(name, postBr);
+	id = (Integer) session.save(student);
+	
+	 * 			DELETE
+
+	StudentTown student = (StudentTown)session.get(StudentTown.class, id);
+	session.delete(student);
+	
+	 * 			GET
+
+	student = (StudentTown)session.get(StudentTown.class, id);
+	
+	* 			UPDATE
+
+	StudentTown student = (StudentTown)session.get(StudentTown.class, id);
+	student.setName(newName);
+	
+	 * 			QUERY
+
+	List students = session.createQuery("FROM Student :student").setParameter("student", abc).list(); 
+
+( find ./ -name '*.java' -print0 | xargs -0 cat ) | wc -l
+
+templates:
+	factconstr
+	transaction
+	getall
