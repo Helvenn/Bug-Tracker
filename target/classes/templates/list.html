@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+>
+<head>
+    <title>Spring Security Example </title>
+    <div th:replace="fragments/header :: header-css"/>
+</head>
+<body>
+
+<div th:replace="fragments/header :: header"/>
+
+<div class="container">
+	<div th:if="${not #lists.isEmpty(integers)}">
+		<h2>Integer list</h2>
+		<table class="table table-stripped">
+			<tr>
+				<th>Integer</th>
+				<th>Integer squared</th>
+				<th>Edit</th>
+			</tr>
+			<tr th:each="integer : ${integers}">
+				<td th:text="${integer}"></td>
+				<td th:text="${integer*integer}"></td>
+				<td> <button type="button">Edit</button> </td>
+				<td> <button type="button">Delete</button> </td>
+			</tr>
+			
+		</table>
+	</div>
+</div>
+
+<div th:replace="fragments/footer :: footer"/>
+
+</body>
+</html>

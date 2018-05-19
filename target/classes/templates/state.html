@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Bugs </title>
+    <div th:replace="fragments/header :: header-css"/>
+</head>
+<body>
+
+<div th:replace="fragments/header :: header"/>
+
+<div class="container">
+	<div th:if="${not #lists.isEmpty(states)}">
+		<h2>State list</h2>
+		<table class="table table-stripped">
+			<tr>
+				<th>Id</th>
+				<th>Description</th>
+			</tr>
+			<tr th:each="state : ${states}">
+				<td th:text="${state.id}"></td>
+				<td th:text="${state.description}"></td>
+			</tr>
+			
+		</table>
+	</div>
+</div>
+
+<div th:replace="fragments/footer :: footer"/>
+
+</body>
+</html>

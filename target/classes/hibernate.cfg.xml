@@ -33,17 +33,16 @@
       
       
       <!-- List of XML mapping files -->
-      <mapping class = "tracker.model.AppUser" />
-      <mapping class = "tracker.model.Bug" />
-      <mapping class = "tracker.model.BugProject" />
-      <mapping class = "tracker.model.Category" />
-      <mapping class = "tracker.model.Image" />
-      <mapping class = "tracker.model.Project" />
-      <mapping class = "tracker.model.Role" />
-      <mapping class = "tracker.model.Severity" />
-      <mapping class = "tracker.model.State" />
-      <mapping class = "tracker.model.UserProject" />
-      <mapping class = "tracker.model.UserResolvingBug" />
+      <mapping class = "com.fer.hr.model.AppUser" />
+      <mapping class = "com.fer.hr.model.Bug" />
+      <mapping class = "com.fer.hr.model.Category" />
+      <mapping class = "com.fer.hr.model.Image" />
+      <mapping class = "com.fer.hr.model.Project" />
+      <mapping class = "com.fer.hr.model.Role" />
+      <mapping class = "com.fer.hr.model.Severity" />
+      <mapping class = "com.fer.hr.model.State" />
+      <mapping class = "com.fer.hr.model.UserProject" />
+      <mapping class = "com.fer.hr.model.UserResolvingBug" />
       
    </session-factory>
 </hibernate-configuration>

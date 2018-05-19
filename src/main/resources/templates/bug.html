@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Bugs </title>
+    <div th:replace="fragments/header :: header-css"/>
+</head>
+<body>
+
+<div th:replace="fragments/header :: header"/>
+
+<div class="container">
+	<div th:if="${not #lists.isEmpty(bugs)}">
+		<h2>Bug list</h2>
+		<table class="table table-stripped">
+			<tr>
+				<th>Id</th>
+				<th>Name</th>
+				<th>Description</th>
+				<th>Time Added</th>
+				<th>Time Resolved</th>
+				<th>Category</th>
+				<th>Severity</th>
+				<th>State</th>
+				<th>Project</th>
+				<th>Edit</th>
+				<th>Delete</th>
+			</tr>
+			<tr th:each="bug : ${bugs}">
+				<td th:text="${bug.id}"></td>
+				<td th:text="${bug.name}"></td>
+				<td th:text="${bug.description}"></td>
+				<td th:text="${bug.timeAdded}"></td>
+				<td th:text="${bug.timeResolved}"></td>
+				<td th:text="${bug.category}"></td>
+				<td th:text="${bug.severity}"></td>
+				<td th:text="${bug.state}"></td>
+				<td th:text="${bug.project}"></td>
+				<td> <button type="button">Edit</button> </td>
+				<td> <button type="button">Delete</button> </td>
+			</tr>
+			
+		</table>
+	</div>
+</div>
+
+<div th:replace="fragments/footer :: footer"/>
+
+</body>
+</html>
