@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Bugs </title>
+    <div th:replace="fragments/header :: header-css"/>
+</head>
+<body>
+
+<div th:replace="fragments/header :: header"/>
+
+
+
+<div class="container">
+	<div th:if="${not #lists.isEmpty(projects)}">
+		<h2>Project list</h2>
+		<table class="table table-stripped">
+			<tr>
+				<th>Id</th>
+				<th>Name</th>
+				<th>Project Leader</th>
+				<th>Your Role</th>
+			</tr>
+			<tr th:each="proj : ${projects}">
+				<td th:text="${proj.id}"></td>
+				<td th:text="${proj.name}"></td>
+				<td th:text="${proj.firstName} + ' ' + ${proj.lastName}"></td>
+				<td th:text="${proj.role}"></td>
+			</tr>
+			
+		</table>
+	</div>
+	<a th:href="@{/project-add}"><button type="button" class="btn btn-primary">Create a new project</button></a>
+</div>
+
+<div th:replace="fragments/footer :: footer"/>
+
+</body>
+</html>

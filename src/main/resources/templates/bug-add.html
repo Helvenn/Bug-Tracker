@@ -10,6 +10,7 @@
 
 
 <div class="container">
+<h2>Submit a new bug</h2>
 <form action="#" th:action="@{/bug-add-new}" th:object="${bug}" method="post">
 	<table class="table table-stripped">
 		<tr>
@@ -33,7 +34,7 @@
 			<td>Category</td>
 			<td>
 				    <select class="form-control" th:field="*{catId}">
-				        <option value="" >Select category</option>
+				        <option value="" >Select Category</option>
 				        <option th:each="cat : ${categories}"
 				                th:value="${cat.id}"
 				                th:text="${cat.description}"></option>
@@ -44,7 +45,7 @@
 			<td>Severity</td>
 			<td>
 				    <select class="form-control" th:field="*{sevId}">
-				        <option value="">Select severity</option>
+				        <option value="">Select Severity</option>
 				        <option th:each="sev : ${severities}"
 				                th:value="${sev.id}"
 				                th:text="${sev.description}"

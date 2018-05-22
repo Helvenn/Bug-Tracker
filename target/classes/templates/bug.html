@@ -8,7 +8,7 @@
 
 <div th:replace="fragments/header :: header"/>
 
-<a th:href="@{/bug-add}"><button type="button">Submit a new bug report</button></a>
+
 
 <div class="container">
 	<div th:if="${not #lists.isEmpty(bugs)}">
@@ -24,7 +24,6 @@
 				<th>Severity</th>
 				<th>State</th>
 				<th>Project</th>
-				<th>Edit</th>
 				<th>Delete</th>
 			</tr>
 			<tr th:each="bug : ${bugs}">
@@ -37,17 +36,17 @@
 				<td th:text="${bug.severity}"></td>
 				<td th:text="${bug.state}"></td>
 				<td th:text="${bug.project}"></td>
-				<td> <button type="button">Edit</button> </td>
 				<td> 
 					
 					<form method="post" th:action="@{/bug/delete/__${bug.id}__}">
-						<button type="submit" class="btn btn-success">Delete</button>
+						<button type="submit" class="btn btn-danger">Delete</button>
 					</form>
 				</td>
 			</tr>
 			
 		</table>
 	</div>
+	<a th:href="@{/bug-add}"><button type="button" class="btn btn-primary">Submit a new bug</button></a>
 </div>
 
 <div th:replace="fragments/footer :: footer"/>

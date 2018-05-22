@@ -3,11 +3,8 @@ package com.fer.hr.model.post;
 import java.io.Serializable;
 
 public class BugPost implements Serializable {
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+	
 	private String name;
 	private String desc;
 	private Integer catId;

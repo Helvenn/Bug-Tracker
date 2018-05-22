@@ -1,12 +1,8 @@
 package com.fer.hr.controller;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,9 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fer.hr.ClassReload;
 import com.fer.hr.model.Bug;
@@ -40,7 +33,7 @@ import com.fer.hr.model.post.BugPost;
 
 @Controller
 public class BugController {
-	
+
 	private static final BugManager bugManager = new BugManager();
 
 	private static final UserManager userManager = new UserManager();
@@ -50,80 +43,75 @@ public class BugController {
 	private static final SeverityManager severityManager = new SeverityManager();
 
 	private static final CategoryManager categoryManager = new CategoryManager();
-	
+
 	private static final ProjectManager projectManager = new ProjectManager();
 
 	@GetMapping("/bug")
-	public String bug(Model model){
-		//Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		//String userName = auth.getName();
-		
-		List<Bug> rawBugs = ClassReload.reloadList(bugManager.getAll());
-		
-		for (Bug bug : rawBugs) {
-			System.out.println(bug.getName());
-		}
-		
+	public String bug(Model model) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String userName = auth.getName();
+
+		List<Bug> rawBugs =  bugManager.getByUser(userName);//bugManager.getAll();
+
 		List<BugDisplay> bugs = new ArrayList<>();
-		
-		
-		if (rawBugs != null){
+
+		if (rawBugs != null) {
 			for (Bug bug : rawBugs) {
 				String state = DefaultState.getById(bug.getStateId());
 				String category = DefaultCategory.getById(bug.getCategoryId());
 				String severity = DefaultSeverity.getById(bug.getSeverityId());
-				List<Project> projects = ClassReload.reloadList(projectManager.getAll());
-				
+				List<Project> projects = projectManager.getAll();
+
 				String project = null;
 				for (Project proj : projects) {
-					if (proj.getId() == bug.getProjectId()){
+					if (proj.getId() == bug.getProjectId()) {
 						project = proj.getName();
 						break;
 					}
 				}
-				BugDisplay bd = new BugDisplay(bug.getId(), bug.getName(), bug.getDescription(),
-						bug.getTimeAdded(), bug.getTimeResolved(), category, severity, state, project);
+				BugDisplay bd = new BugDisplay(bug.getId(), bug.getName(), bug.getDescription(), bug.getTimeAdded(),
+						bug.getTimeResolved(), category, severity, state, project);
 				bugs.add(bd);
 			}
 		}
-			
+
 		model.addAttribute("bugs", bugs);
-		
+
 		return "/bug";
 	}
-	
-	@PostMapping(value="/bug/delete/{id}")
-	public String delete(@PathVariable int id){
+
+	@PostMapping(value = "/bug/delete/{id}")
+	public String delete(@PathVariable int id) {
 		bugManager.delete(id);
-		
+
 		return "redirect:/bug";
 	}
-	
+
 	@GetMapping("/bug-add")
-	public String AddBug(Model model){
-		List<Category> cat = ClassReload.reloadList(categoryManager.getAll());
-		List<Severity> sev = ClassReload.reloadList(severityManager.getAll());
-		List<Project> proj = ClassReload.reloadList(projectManager.getAll());
-		
+	public String AddBug(Model model) {
+		List<Category> cat = categoryManager.getAll();
+		List<Severity> sev = severityManager.getAll();
+		List<Project> proj = projectManager.getAll();
+
 		model.addAttribute("categories", cat);
 		model.addAttribute("severities", sev);
 		model.addAttribute("projects", proj);
 		model.addAttribute("bug", new BugPost());
-		
+
 		return "/bug-add";
 	}
-	
+
 	@PostMapping("/bug-add-new")
-	public String Add(@ModelAttribute BugPost bug, BindingResult result, Model model){
-		
+	public String Add(@ModelAttribute BugPost bug, BindingResult result, Model model) {
+
 		Timestamp timeAdded = new Timestamp(System.currentTimeMillis());
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		String userName = auth.getName();
-		
-		
-		Bug bugAdd = new Bug(bug.getName(), bug.getDesc(), timeAdded, bug.getProjId(), 0, bug.getCatId(), bug.getSevId(), userName);
+
+		Bug bugAdd = new Bug(bug.getName(), bug.getDesc(), timeAdded, bug.getProjId(), 0, bug.getCatId(),
+				bug.getSevId(), userName);
 		bugManager.add(bugAdd);
-		
+
 		return "redirect:/bug";
 	}
 
