@@ -1,6 +1,7 @@
 package com.fer.hr.model.managers;
 
 import java.util.List;
+import java.util.Random;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -10,17 +11,16 @@ import org.hibernate.cfg.Configuration;
 import com.fer.hr.ClassReload;
 import com.fer.hr.model.*;
 
-
 public class ProjectManager {
 	private SessionFactory factory;
 
 	public ProjectManager() {
 		try {
-	         factory = new Configuration().configure().buildSessionFactory();
-	      } catch (Throwable ex) { 
-	         System.err.println("Failed to create sessionFactory object." + ex);
-		         throw new ExceptionInInitializerError(ex); 
-		  }
+			factory = new Configuration().configure().buildSessionFactory();
+		} catch (Throwable ex) {
+			System.err.println("Failed to create sessionFactory object." + ex);
+			throw new ExceptionInInitializerError(ex);
+		}
 	}
 
 	public Integer add(Project project) {
@@ -30,7 +30,16 @@ public class ProjectManager {
 
 		try {
 			tx = session.beginTransaction();
-			id = (Integer) session.save(project);
+			Random r = new Random(System.currentTimeMillis());
+			StringBuilder bob = new StringBuilder();
+			bob.append("INSERT INTO project ");
+			bob.append("(id, name, leader)");
+			bob.append(" VALUES ");
+			bob.append("(:id , :nm , :ldr)");
+			String query = bob.toString();
+			id = Math.abs(r.nextInt());
+			session.createNativeQuery(query).setParameter("id", id).setParameter("nm", project.getName())
+					.setParameter("ldr", project.getLeaderId()).executeUpdate();
 
 			tx.commit();
 		} catch (Exception e) {
@@ -44,36 +53,26 @@ public class ProjectManager {
 	}
 
 	public Project get(int id) {
-		Session session = factory.openSession();
-		Transaction tx = null;
 		Project proj = null;
-
-		try {
-			tx = session.beginTransaction();
-			proj = ClassReload.reloadSingle(session.get(Project.class, id));
-
-			tx.commit();
-		} catch (Exception e) {
-			if (tx != null)
-				tx.rollback();
-			e.printStackTrace();
-		} finally {
-			session.close();
+		List<Project> all = getAll();
+		for (Project b : all) {
+			if (b.getId() == id) {
+				proj = b;
+				break;
+			}
 		}
 		return proj;
 	}
 
-	public boolean delete(int id) {
+	public void delete(int id) {
 		Session session = factory.openSession();
 		Transaction tx = null;
 
 		try {
 			tx = session.beginTransaction();
-			Project proj = (Project) session.get(Project.class, id);
-			session.delete(proj);
+			session.delete(session.get(Project.class, id));
 
 			tx.commit();
-			return true;
 		} catch (Exception e) {
 			if (tx != null)
 				tx.rollback();
@@ -81,52 +80,13 @@ public class ProjectManager {
 		} finally {
 			session.close();
 		}
-		return false;
 	}
 
-	public boolean updateName(int id, String newName) {
-		Session session = factory.openSession();
-		Transaction tx = null;
-
-		try {
-			tx = session.beginTransaction();
-			Project proj = (Project) session.get(Project.class, id);
-			proj.setName(newName);
-
-			tx.commit();
-			return true;
-		} catch (Exception e) {
-			if (tx != null)
-				tx.rollback();
-			e.printStackTrace();
-		} finally {
-			session.close();
-		}
-		return false;
+	public void update(Project proj) {
+		delete(proj.getId());
+		add(proj);
 	}
 
-	public boolean updateLeader(String id, String newLeaderId) {
-		Session session = factory.openSession();
-		Transaction tx = null;
-
-		try {
-			tx = session.beginTransaction();
-			Project proj = (Project) session.get(Project.class, id);
-			proj.setLeaderId(newLeaderId);
-
-			tx.commit();
-			return true;
-		} catch (Exception e) {
-			if (tx != null)
-				tx.rollback();
-			e.printStackTrace();
-		} finally {
-			session.close();
-		}
-		return false;
-	}
-
-	@SuppressWarnings("unchecked")
 	public List<Project> getAll() {
 		Session session = factory.openSession();
 		Transaction tx = null;
@@ -135,7 +95,7 @@ public class ProjectManager {
 		try {
 			tx = session.beginTransaction();
 			String query = "FROM Project";
-			list = (List<Project>) session.createQuery(query).list();
+			list = ClassReload.reloadList(session.createQuery(query).list());
 
 			tx.commit();
 		} catch (Exception e) {

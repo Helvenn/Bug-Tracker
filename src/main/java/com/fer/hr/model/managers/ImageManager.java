@@ -1,11 +1,15 @@
 package com.fer.hr.model.managers;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
+
+import com.fer.hr.ClassReload;
 import com.fer.hr.model.*;
 
 public class ImageManager {
@@ -27,8 +31,19 @@ public class ImageManager {
 
 		try {
 			tx = session.beginTransaction();
-			id = (Integer) session.save(image);
-
+			Random r = new Random(System.currentTimeMillis());
+			StringBuilder bob = new StringBuilder();
+			bob.append("INSERT INTO image ");
+			bob.append("(id, name, data)");
+			bob.append(" VALUES ");
+			bob.append("(:id , :nm , :data)");
+			String query = bob.toString();
+			id = Math.abs(r.nextInt());
+			session.createNativeQuery(query)
+					.setParameter("id", id)
+					.setParameter("nm", image.getFileName())
+					.setParameter("data", image.getData()).executeUpdate();
+			
 			tx.commit();
 		} catch (Exception e) {
 			if (tx != null)
@@ -41,36 +56,26 @@ public class ImageManager {
 	}
 	
 	public Image get(int id) {
-		Session session = factory.openSession();
-		Transaction tx = null;
 		Image image = null;
-
-		try {
-			tx = session.beginTransaction();
-			image = session.get(Image.class, id);
-
-			tx.commit();
-		} catch (Exception e) {
-			if (tx != null)
-				tx.rollback();
-			e.printStackTrace();
-		} finally {
-			session.close();
+		List<Image> all = getAll();
+		for (Image b : all) {
+			if (b.getId() == id) {
+				image = b;
+				break;
+			}
 		}
 		return image;
 	}
 	
-	public boolean delete(int id) {
+	public void delete(int id) {
 		Session session = factory.openSession();
 		Transaction tx = null;
 
 		try {
 			tx = session.beginTransaction();
-			Image image = (Image) session.get(Image.class, id);
-			session.delete(image);
+			session.delete(session.get(Image.class, id));
 
 			tx.commit();
-			return true;
 		} catch (Exception e) {
 			if (tx != null)
 				tx.rollback();
@@ -78,40 +83,22 @@ public class ImageManager {
 		} finally {
 			session.close();
 		}
-		return false;
 	}
 	
-	public boolean updateName(int id, String newName) {
-		Session session = factory.openSession();
-		Transaction tx = null;
-
-		try {
-			tx = session.beginTransaction();
-			Image image = (Image) session.get(Image.class, id);
-			image.setFileName(newName);
-
-			tx.commit();
-			return true;
-		} catch (Exception e) {
-			if (tx != null)
-				tx.rollback();
-			e.printStackTrace();
-		} finally {
-			session.close();
-		}
-		return false;
+	public void update(Image image) {
+		delete(image.getId());
+		add(image);
 	}
 	
-	@SuppressWarnings("unchecked")
 	public List<Image> getAll() {
 		Session session = factory.openSession();
 		Transaction tx = null;
-		List<Image> list = null;
+		List<Image> list = new ArrayList<>();
 		
 		try {
 			tx = session.beginTransaction();
 			String query = "SELECT * FROM image";
-			list = (List<Image>) session.createQuery(query).list();
+			list = ClassReload.reloadList(session.createQuery(query).list());
 			
 			tx.commit();
 		} catch (Exception e) {

@@ -1,14 +1,16 @@
 package com.fer.hr.model.managers;
 
-import java.security.InvalidParameterException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
+import com.fer.hr.ClassReload;
 import com.fer.hr.model.*;
 
 public class BugManager {
@@ -16,35 +18,30 @@ public class BugManager {
 
 	public BugManager() {
 		try {
-	         factory = new Configuration().configure().buildSessionFactory();
-	      } catch (Throwable ex) { 
-	         System.err.println("Failed to create sessionFactory object." + ex);
-		         throw new ExceptionInInitializerError(ex); 
-		  }
+			factory = new Configuration().configure().buildSessionFactory();
+		} catch (Throwable ex) {
+			System.err.println("Failed to create sessionFactory object." + ex);
+			throw new ExceptionInInitializerError(ex);
+		}
 	}
-	
-	@SuppressWarnings("unchecked")
-	public List<Bug> getByUser(String userName){
+
+	public List<Bug> getByUser(String userName) {
 		Session session = factory.openSession();
 		Transaction tx = null;
-		List<Bug> bugs = null;
+		List<Bug> bugs = new ArrayList<>();
+		if (userName == null){
+			return bugs;
+		}
+		if (userName.isEmpty()) {
+			return bugs;
+		}
 		try {
 			tx = session.beginTransaction();
-			if (userName.isEmpty()){
-				return null;
+			List<Bug> all = getAll();
+			for (Bug b : all){
+				if (b.getUserName().equals(userName))
+					bugs.add(b);
 			}
-			
-			StringBuilder bob = new StringBuilder();
-			bob.append("FROM Bug");
-
-			bob.append(" WHERE ");
-			bob.append("user = :userName");
-
-			String query = bob.toString();
-
-			bugs = session.createQuery(query).setParameter("userName", userName).list();
-
-
 			tx.commit();
 		} catch (Exception e) {
 			if (tx != null)
@@ -55,7 +52,7 @@ public class BugManager {
 		}
 		return bugs;
 	}
-
+	
 	public Integer add(Bug bug) {
 		Session session = factory.openSession();
 		Transaction tx = null;
@@ -63,8 +60,25 @@ public class BugManager {
 
 		try {
 			tx = session.beginTransaction();
-			id = (Integer) session.save(bug);
-
+			Random r = new Random(System.currentTimeMillis());
+			StringBuilder bob = new StringBuilder();
+			bob.append("INSERT INTO bug ");
+			bob.append("(id, user_name, name, description, time_added, time_resolved, image_id, category_id, severity_id, state_id, project_id)");
+			bob.append(" VALUES ");
+			bob.append("(:id , :usr , :nm , :desc , :ta , null , null , :cid , :sevid , :stid , :pid)");
+			String query = bob.toString();
+			id = Math.abs(r.nextInt());
+			session.createNativeQuery(query)
+					.setParameter("id", id)
+					.setParameter("usr", bug.getUserName())
+					.setParameter("nm", bug.getName())
+					.setParameter("desc", bug.getDescription())
+					.setParameter("ta", bug.getTimeAdded())
+					.setParameter("cid", bug.getCategoryId())
+					.setParameter("sevid", bug.getSeverityId())
+					.setParameter("stid", bug.getStateId())
+					.setParameter("pid", bug.getProjectId()).executeUpdate();
+			
 			tx.commit();
 		} catch (Exception e) {
 			if (tx != null)
@@ -76,17 +90,15 @@ public class BugManager {
 		return id;
 	}
 
-	public boolean delete(int id) {
+	public void delete(int id) {
 		Session session = factory.openSession();
 		Transaction tx = null;
 
 		try {
 			tx = session.beginTransaction();
-			Bug bug = (Bug) session.get(Bug.class, id);
-			session.delete(bug);
+			session.delete(session.get(Bug.class, id));
 
 			tx.commit();
-			return true;
 		} catch (Exception e) {
 			if (tx != null)
 				tx.rollback();
@@ -94,130 +106,61 @@ public class BugManager {
 		} finally {
 			session.close();
 		}
-		return false;
+
 	}
 
 	public Bug get(int id) {
-		Session session = factory.openSession();
-		Transaction tx = null;
 		Bug bug = null;
-
-		try {
-			tx = session.beginTransaction();
-			bug = (Bug) session.get(Bug.class, id);
-
-			tx.commit();
-		} catch (Exception e) {
-			if (tx != null)
-				tx.rollback();
-			e.printStackTrace();
-		} finally {
-			session.close();
+		List<Bug> all = getAll();
+		for(Bug b : all){
+			if (b.getId() == id){
+				bug = b;
+				break;
+			}
 		}
 		return bug;
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Bug> getAddedByTimeframe(Timestamp start, Timestamp finish) {
-		Session session = factory.openSession();
-		Transaction tx = null;
-		List<Bug> list = null;
-
-		try {
-			tx = session.beginTransaction();
-			StringBuilder bob = new StringBuilder();
-			bob.append("FROM Bug");
-
-			if (start == null || finish == null) {
-				throw new InvalidParameterException("Time started and time finished cannot be null");
+		List<Bug> list = new ArrayList<>();
+		List<Bug> all = getAll();
+		for (Bug b : all) {
+			if (b.getTimeAdded() != null){
+				if (b.getTimeAdded().compareTo(start) >= 0 && b.getTimeAdded().compareTo(finish) <= 0){
+					list.add(b);
+				}
 			}
-
-			bob.append(" WHERE ");
-			bob.append("time_added > :tstart");
-			bob.append(" AND ");
-			bob.append("time_added < :tfinish");
-
-			String query = bob.toString();
-
-			list = session.createQuery(query).setParameter("tstart", start).setParameter("tfinish", finish).list();
-
-			tx.commit();
-		} catch (Exception e) {
-			if (tx != null)
-				tx.rollback();
-			e.printStackTrace();
-		} finally {
-			session.close();
 		}
 		return list;
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Bug> getResolvedByTimeframe(Timestamp start, Timestamp finish) {
-		Session session = factory.openSession();
-		Transaction tx = null;
-		List<Bug> list = null;
-
-		try {
-			tx = session.beginTransaction();
-			StringBuilder bob = new StringBuilder();
-			bob.append("SELECT * FROM Bug");
-
-			if (start == null || finish == null) {
-				throw new InvalidParameterException("Time started and time finished cannot be null");
+		List<Bug> list = new ArrayList<>();
+		List<Bug> all = getAll();
+		for (Bug b : all) {
+			if (b.getTimeResolved() != null){
+				if (b.getTimeResolved().compareTo(start) >= 0 && b.getTimeResolved().compareTo(finish) <= 0){
+					list.add(b);
+				}
 			}
-
-			bob.append(" WHERE ");
-			bob.append("time_resolved > :tstart");
-			bob.append(" AND ");
-			bob.append("time_resolved < :tfinish");
-
-			String query = bob.toString();
-
-			list = session.createQuery(query).setParameter("tstart", start).setParameter("tfinish", finish).list();
-
-			tx.commit();
-		} catch (Exception e) {
-			if (tx != null)
-				tx.rollback();
-			e.printStackTrace();
-		} finally {
-			session.close();
 		}
 		return list;
 	}
 
-	public boolean updateTimeResolved(String userName, Timestamp time) {
-		Session session = factory.openSession();
-		Transaction tx = null;
-
-		try {
-			tx = session.beginTransaction();
-			Bug bug = (Bug) session.get(Bug.class, userName);
-			bug.setTimeResolved(time);
-
-			tx.commit();
-			return true;
-		} catch (Exception e) {
-			if (tx != null)
-				tx.rollback();
-			e.printStackTrace();
-		} finally {
-			session.close();
-		}
-		return false;
+	public void update(Bug bug) {
+		delete(bug.getId());
+		add(bug);
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Bug> getAll() {
 		Session session = factory.openSession();
 		Transaction tx = null;
-		List<Bug> list = null;
+		List<Bug> list = new ArrayList<>();
 
 		try {
 			tx = session.beginTransaction();
 			String query = "FROM Bug";
-			list = (List<Bug>) session.createQuery(query).list();
+			list = ClassReload.reloadList(session.createQuery(query).list());
 
 			tx.commit();
 		} catch (Exception e) {
@@ -229,31 +172,16 @@ public class BugManager {
 		}
 		return list;
 	}
-	
-	@SuppressWarnings("unchecked")
+
 	public List<Bug> getByProject(int projectId) {
-		Session session = factory.openSession();
-		Transaction tx = null;
-		List<Bug> list = null;
-
-		try {
-			tx = session.beginTransaction();
-			StringBuilder bob = new StringBuilder();
-			bob.append("FROM Bug ");
-			bob.append("WHERE project_id = :proj");
-			String query = bob.toString();
-			
-			list = (List<Bug>) session.createQuery(query).setParameter("proj", projectId).list();
-
-			tx.commit();
-		} catch (Exception e) {
-			if (tx != null)
-				tx.rollback();
-			e.printStackTrace();
-		} finally {
-			session.close();
+		List<Bug> bugs = new ArrayList<>();
+		List<Bug> all = getAll();
+		for (Bug b : all) {
+			if (b.getProjectId() == projectId) {
+				bugs.add(b);
+			}
 		}
-		return list;
+		return bugs;
 	}
 
 }

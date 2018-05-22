@@ -1,5 +1,6 @@
 package com.fer.hr.model.managers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Session;
@@ -7,6 +8,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
+import com.fer.hr.ClassReload;
 import com.fer.hr.model.*;
 
 public class UserManager {
@@ -28,8 +30,20 @@ public class UserManager {
 
 		try {
 			tx = session.beginTransaction();
-			userName = (String) session.save(user);
-
+			StringBuilder bob = new StringBuilder();
+			bob.append("INSERT INTO app_user ");
+			bob.append("(user_name, password, first_name, last_name, email)");
+			bob.append(" VALUES ");
+			bob.append("(:un , :pw , :fn , :ln , :em)");
+			String query = bob.toString();
+			userName = user.getUserName();
+			session.createNativeQuery(query)
+					.setParameter("un", userName)
+					.setParameter("pw", user.getPassword())
+					.setParameter("fn", user.getFirstName())
+					.setParameter("ln", user.getLastName())
+					.setParameter("em", user.getEmail()).executeUpdate();
+			
 			tx.commit();
 		} catch (Exception e) {
 			if (tx != null)
@@ -41,17 +55,15 @@ public class UserManager {
 		return userName;
 	}
 
-	public boolean delete(String userName) {
+	public void delete(String userName) {
 		Session session = factory.openSession();
 		Transaction tx = null;
 
 		try {
 			tx = session.beginTransaction();
-			AppUser user = (AppUser) session.get(AppUser.class, userName);
-			session.delete(user);
+			session.delete(session.get(AppUser.class, userName));
 
 			tx.commit();
-			return true;
 		} catch (Exception e) {
 			if (tx != null)
 				tx.rollback();
@@ -59,63 +71,34 @@ public class UserManager {
 		} finally {
 			session.close();
 		}
-		return false;
 	}
 
 	public AppUser get(String userName) {
-		Session session = factory.openSession();
-		Transaction tx = null;
 		AppUser user = null;
-
-		try {
-			tx = session.beginTransaction();
-			user = (AppUser) session.get(AppUser.class, userName);
-
-			tx.commit();
-		} catch (Exception e) {
-			if (tx != null)
-				tx.rollback();
-			e.printStackTrace();
-		} finally {
-			session.close();
+		List<AppUser> all = getAll();
+		for (AppUser b : all) {
+			if (b.getUserName().equals(userName)) {
+				user = b;
+				break;
+			}
 		}
 		return user;
 	}
 
-	public boolean updateName(String userName, String firstName, String lastName) {
-		Session session = factory.openSession();
-		Transaction tx = null;
-
-		try {
-			tx = session.beginTransaction();
-			AppUser user = (AppUser) session.get(AppUser.class, userName);
-			if (firstName != null)
-				user.setFirstName(firstName);
-			if (lastName != null)
-				user.setLastName(lastName);
-
-			tx.commit();
-			return true;
-		} catch (Exception e) {
-			if (tx != null)
-				tx.rollback();
-			e.printStackTrace();
-		} finally {
-			session.close();
-		}
-		return false;
+	public void update(AppUser user) {
+		delete(user.getUserName());
+		add(user);
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<AppUser> getAll() {
 		Session session = factory.openSession();
 		Transaction tx = null;
-		List<AppUser> list = null;
+		List<AppUser> list = new ArrayList<>();
 
 		try {
 			tx = session.beginTransaction();
-			String query = "FROM appuser";
-			list = session.createQuery(query).list();
+			String query = "FROM AppUser";
+			list = ClassReload.reloadList(session.createQuery(query).list());
 
 			tx.commit();
 		} catch (Exception e) {

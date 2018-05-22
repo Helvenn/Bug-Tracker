@@ -1,11 +1,15 @@
 package com.fer.hr.model.managers;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
+
+import com.fer.hr.ClassReload;
 import com.fer.hr.model.*;
 
 
@@ -28,8 +32,18 @@ public class RoleManager {
 
 		try {
 			tx = session.beginTransaction();
-			id = (Integer) session.save(role);
-
+			Random r = new Random(System.currentTimeMillis());
+			StringBuilder bob = new StringBuilder();
+			bob.append("INSERT INTO user_role ");
+			bob.append("(id, name)");
+			bob.append(" VALUES ");
+			bob.append("(:id , :nm)");
+			String query = bob.toString();
+			id = Math.abs(r.nextInt());
+			session.createNativeQuery(query)
+					.setParameter("id", id)
+					.setParameter("nm", role.getName()).executeUpdate();
+			
 			tx.commit();
 		} catch (Exception e) {
 			if (tx != null)
@@ -42,36 +56,26 @@ public class RoleManager {
 	}
 
 	public Role get(int id) {
-		Session session = factory.openSession();
-		Transaction tx = null;
 		Role role = null;
-
-		try {
-			tx = session.beginTransaction();
-			role = (Role) session.get(Role.class, id);
-
-			tx.commit();
-		} catch (Exception e) {
-			if (tx != null)
-				tx.rollback();
-			e.printStackTrace();
-		} finally {
-			session.close();
+		List<Role> all = getAll();
+		for (Role b : all) {
+			if (b.getId() == id) {
+				role = b;
+				break;
+			}
 		}
 		return role;
 	}
 
-	public boolean delete(int id) {
+	public void delete(int id) {
 		Session session = factory.openSession();
 		Transaction tx = null;
 
 		try {
 			tx = session.beginTransaction();
-			Role role = (Role) session.get(Role.class, id);
-			session.delete(role);
+			session.delete(session.get(Role.class, id));
 
 			tx.commit();
-			return true;
 		} catch (Exception e) {
 			if (tx != null)
 				tx.rollback();
@@ -79,40 +83,22 @@ public class RoleManager {
 		} finally {
 			session.close();
 		}
-		return false;
 	}
 
-	public boolean updateName(int id, String newName) {
-		Session session = factory.openSession();
-		Transaction tx = null;
-
-		try {
-			tx = session.beginTransaction();
-			Role role = (Role) session.get(Role.class, id);
-			role.setName(newName);
-
-			tx.commit();
-			return true;
-		} catch (Exception e) {
-			if (tx != null)
-				tx.rollback();
-			e.printStackTrace();
-		} finally {
-			session.close();
-		}
-		return false;
+	public void update(Role role) {
+		delete(role.getId());
+		add(role);
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Role> getAll() {
 		Session session = factory.openSession();
 		Transaction tx = null;
-		List<Role> list = null;
+		List<Role> list = new ArrayList<>();
 
 		try {
 			tx = session.beginTransaction();
 			String query = "FROM Role";
-			list = (List<Role>) session.createQuery(query).list();
+			list = ClassReload.reloadList(session.createQuery(query).list());
 
 			tx.commit();
 		} catch (Exception e) {

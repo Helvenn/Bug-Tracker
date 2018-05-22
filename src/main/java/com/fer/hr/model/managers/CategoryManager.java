@@ -1,12 +1,15 @@
 package com.fer.hr.model.managers;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
+import com.fer.hr.ClassReload;
 import com.fer.hr.model.*;
 
 
@@ -29,8 +32,19 @@ public class CategoryManager {
 
 		try {
 			tx = session.beginTransaction();
-			id = (Integer) session.save(category);
-
+			Random r = new Random(System.currentTimeMillis());
+			StringBuilder bob = new StringBuilder();
+			bob.append("INSERT INTO category ");
+			bob.append("(id, description)");
+			bob.append(" VALUES ");
+			bob.append("(:id , :desc)");
+			String query = bob.toString();
+			id = Math.abs(r.nextInt());
+			session.createNativeQuery(query)
+					.setParameter("id", id)
+					.setParameter("desc", category.getDescription())
+					.executeUpdate();
+			
 			tx.commit();
 		} catch (Exception e) {
 			if (tx != null)
@@ -43,36 +57,26 @@ public class CategoryManager {
 	}
 
 	public Category get(int id) {
-		Session session = factory.openSession();
-		Transaction tx = null;
 		Category cat = null;
-
-		try {
-			tx = session.beginTransaction();
-			cat = (Category) session.get(Category.class, id);
-
-			tx.commit();
-		} catch (Exception e) {
-			if (tx != null)
-				tx.rollback();
-			e.printStackTrace();
-		} finally {
-			session.close();
+		List<Category> all = getAll();
+		for (Category b : all) {
+			if (b.getId() == id) {
+				cat = b;
+				break;
+			}
 		}
 		return cat;
 	}
 
-	public boolean delete(int id) {
+	public void delete(int id) {
 		Session session = factory.openSession();
 		Transaction tx = null;
 
 		try {
 			tx = session.beginTransaction();
-			Category cat = (Category) session.get(Category.class, id);
-			session.delete(cat);
+			session.delete(session.get(Category.class, id));
 
 			tx.commit();
-			return true;
 		} catch (Exception e) {
 			if (tx != null)
 				tx.rollback();
@@ -80,40 +84,22 @@ public class CategoryManager {
 		} finally {
 			session.close();
 		}
-		return false;
 	}
 
-	public boolean updateDesc(int id, String newDesc) {
-		Session session = factory.openSession();
-		Transaction tx = null;
-
-		try {
-			tx = session.beginTransaction();
-			Category cat = (Category) session.get(Category.class, id);
-			cat.setDescription(newDesc);
-
-			tx.commit();
-			return false;
-		} catch (Exception e) {
-			if (tx != null)
-				tx.rollback();
-			e.printStackTrace();
-		} finally {
-			session.close();
-		}
-		return false;
+	public void update(Category cat) {
+		delete(cat.getId());
+		add(cat);
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Category> getAll() {
 		Session session = factory.openSession();
 		Transaction tx = null;
-		List<Category> list = null;
+		List<Category> list = new ArrayList<>();
 
 		try {
 			tx = session.beginTransaction();
-			String query = "FROM cagtegory";
-			list = (List<Category>) session.createQuery(query).list();
+			String query = "FROM Category";
+			list = ClassReload.reloadList(session.createQuery(query).list());
 
 			tx.commit();
 		} catch (Exception e) {
