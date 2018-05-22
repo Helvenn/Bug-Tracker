@@ -1,18 +1,31 @@
 package com.fer.hr.controller;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fer.hr.ClassReload;
 import com.fer.hr.model.Bug;
+import com.fer.hr.model.Category;
 import com.fer.hr.model.Project;
+import com.fer.hr.model.Severity;
 import com.fer.hr.model.defaultIds.DefaultCategory;
 import com.fer.hr.model.defaultIds.DefaultSeverity;
 import com.fer.hr.model.defaultIds.DefaultState;
@@ -23,6 +36,7 @@ import com.fer.hr.model.managers.ProjectManager;
 import com.fer.hr.model.managers.SeverityManager;
 import com.fer.hr.model.managers.StateManager;
 import com.fer.hr.model.managers.UserManager;
+import com.fer.hr.model.post.BugPost;
 
 @Controller
 public class BugController {
@@ -76,6 +90,41 @@ public class BugController {
 		model.addAttribute("bugs", bugs);
 		
 		return "/bug";
+	}
+	
+	@PostMapping(value="/bug/delete/{id}")
+	public String delete(@PathVariable int id){
+		bugManager.delete(id);
+		
+		return "redirect:/bug";
+	}
+	
+	@GetMapping("/bug-add")
+	public String AddBug(Model model){
+		List<Category> cat = ClassReload.reloadList(categoryManager.getAll());
+		List<Severity> sev = ClassReload.reloadList(severityManager.getAll());
+		List<Project> proj = ClassReload.reloadList(projectManager.getAll());
+		
+		model.addAttribute("categories", cat);
+		model.addAttribute("severities", sev);
+		model.addAttribute("projects", proj);
+		model.addAttribute("bug", new BugPost());
+		
+		return "/bug-add";
+	}
+	
+	@PostMapping("/bug-add-new")
+	public String Add(@ModelAttribute BugPost bug, BindingResult result, Model model){
+		
+		Timestamp timeAdded = new Timestamp(System.currentTimeMillis());
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String userName = auth.getName();
+		
+		
+		Bug bugAdd = new Bug(bug.getName(), bug.getDesc(), timeAdded, bug.getProjId(), 0, bug.getCatId(), bug.getSevId(), userName);
+		bugManager.add(bugAdd);
+		
+		return "redirect:/bug";
 	}
 
 }

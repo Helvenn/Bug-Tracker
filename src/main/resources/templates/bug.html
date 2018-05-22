@@ -8,6 +8,8 @@
 
 <div th:replace="fragments/header :: header"/>
 
+<a th:href="@{/bug-add}"><button type="button">Submit a new bug report</button></a>
+
 <div class="container">
 	<div th:if="${not #lists.isEmpty(bugs)}">
 		<h2>Bug list</h2>
@@ -36,7 +38,12 @@
 				<td th:text="${bug.state}"></td>
 				<td th:text="${bug.project}"></td>
 				<td> <button type="button">Edit</button> </td>
-				<td> <button type="button">Delete</button> </td>
+				<td> 
+					
+					<form method="post" th:action="@{/bug/delete/__${bug.id}__}">
+						<button type="submit" class="btn btn-success">Delete</button>
+					</form>
+				</td>
 			</tr>
 			
 		</table>

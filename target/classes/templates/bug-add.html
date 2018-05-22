@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add bug</title>
+    <div th:replace="fragments/header :: header-css"/>
+</head>
+<body>
+
+<div th:replace="fragments/header :: header"/>
+
+
+<div class="container">
+<form action="#" th:action="@{/bug-add-new}" th:object="${bug}" method="post">
+	<table class="table table-stripped">
+		<tr>
+			<th>Field name</th>
+			<th>Field value</th>
+			
+		</tr>
+		<tr>
+			<td>Name</td>
+			<td>
+				 <input type="text" th:field="*{name}"> </input>
+			</td>
+		</tr>
+		<tr>
+			<td>Description</td>
+			<td>
+                <input type="text" th:field="*{desc}"> </input>
+			</td>
+		</tr>
+		<tr>
+			<td>Category</td>
+			<td>
+				    <select class="form-control" th:field="*{catId}">
+				        <option value="" >Select category</option>
+				        <option th:each="cat : ${categories}"
+				                th:value="${cat.id}"
+				                th:text="${cat.description}"></option>
+				    </select>
+			</td>
+		</tr>
+		<tr>
+			<td>Severity</td>
+			<td>
+				    <select class="form-control" th:field="*{sevId}">
+				        <option value="">Select severity</option>
+				        <option th:each="sev : ${severities}"
+				                th:value="${sev.id}"
+				                th:text="${sev.description}"
+				                ></option>
+				    </select>
+			</td>
+		</tr>
+		<tr>
+			<td>Project</td>
+			<td>
+				    <select class="form-control" th:field="*{projId}">
+				        <option value="">Select Project</option>
+				        <option th:each="proj : ${projects}"
+				                th:value="${proj.id}"
+				                th:text="${proj.name}"
+				                ></option>
+				    </select>
+			</td>
+		</tr>
+		
+	</table>
+	<button type="submit" value="Submit" class="btn btn-success" >Add</button>
+</form>
+</div>
+
+
+<div th:replace="fragments/footer :: footer"/>
+
+</body>
+</html>
