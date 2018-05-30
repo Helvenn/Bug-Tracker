@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Project details </title>
+    <div th:replace="fragments/header :: header-css"/>
+</head>
+<body>
+
+<div th:replace="fragments/header :: header"/>
+
+
+
+<div class="container">
+
+	<h2 th:text="${project.name}"></h2>
+	
+	<a th:if="${project.leader}" th:href="@{/statistic/__${project.id}__}"><button type="button" class="btn btn-primary">Project statistic</button></a>
+	
+	<div th:if="${not #lists.isEmpty(project.users)}">
+		<h4>Users on this project:</h4>
+		<table class="table table-stripped">
+			<tr>
+				<th>Name</th>
+				<th>Role on this project</th>
+				<th>Actions</th>
+			</tr>
+			<tr th:each="usr : ${project.users}">
+				<td th:text="${usr.firstName} + ' ' + ${usr.lastName}"></td>
+				<td th:text="${usr.role}"></td>
+				<td>
+					<form th:if="${usr.canBeRemoved}" method="post" th:action="@{/project-remove-user/__${project.id}__/__${usr.userName}__}"> 
+						<button type="submit" class="btn btn-danger">Remove</button>
+					</form>
+				</td>
+			</tr>
+			
+		</table>
+	</div>
+	
+	<a th:if="${project.leader}" th:href="@{/project-add-user/__${project.id}__}"><button type="button" class="btn btn-primary">Add user</button></a>
+	
+	<div th:if="${not #lists.isEmpty(project.bugs)}">
+		<h4>Bugs on project:</h4>
+		<table class="table table-stripped">
+			<tr>
+				<th>Name</th>
+				<th>Description</th>
+				<th>Time Added</th>
+				<th>Time Resolved</th>
+				<th>Category</th>
+				<th>Severity</th>
+				<th>State</th>
+				<th th:if="${islead}">Details</th>
+				<th>Actions</th>
+			</tr>
+			<tr th:each="bug : ${project.bugs}">
+				<td th:text="${bug.name}"></td>
+				<td th:text="${bug.description}"></td>
+				<td th:text="${bug.timeAdded}"></td>
+				<td th:text="${bug.timeResolved}"></td>
+				<td th:text="${bug.category}"></td>
+				<td th:text="${bug.severity}"></td>
+				<td th:text="${bug.state}"></td>
+				<td th:if="${islead}">
+					<a th:if="${islead}" th:href="@{/bug-details/__${bug.id}__}">
+						<button type="submit" class="btn btn-success">Details</button>
+					</a>
+				</td>
+				<td> 
+					
+					<form th:if="${bug.canDelete}" method="post" th:action="@{/bug/change-state/__${bug.id}__/__${13}__/__${project.id}__}">
+						<button type="submit" class="btn btn-danger">Delete</button>
+					</form>
+					<form th:if="${bug.canOpen}" method="post" th:action="@{/bug/change-state/__${bug.id}__/__${2}__/__${project.id}__}">
+						<button type="submit" class="btn btn-info">Open</button>
+					</form>
+					<a th:if="${bug.canAssign}" th:href="@{/bug/assign/__${bug.id}__/__${project.id}__}">
+						<button type="submit" class="btn btn-info">Assign</button>
+					</a>
+					<form th:if="${bug.canFix}" method="post" th:action="@{/bug/change-state/__${bug.id}__/__${3}__/__${project.id}__}">
+						<button type="submit" class="btn btn-info">Fixed</button>
+					</form>
+					<form th:if="${bug.canRetest}" method="post" th:action="@{/bug/change-state/__${bug.id}__/__${5}__/__${project.id}__}">
+						<button type="submit" class="btn btn-info">Retest</button>
+					</form>
+					<form th:if="${bug.canVerify}" method="post" th:action="@{/bug/change-state/__${bug.id}__/__${11}__/__${project.id}__}">
+						<button type="submit" class="btn btn-info">Verify</button>
+					</form>
+					<form th:if="${bug.canClose}" method="post" th:action="@{/bug/change-state/__${bug.id}__/__${12}__/__${project.id}__}">
+						<button type="submit" class="btn btn-info">Close</button>
+					</form>
+					<form th:if="${bug.canReopen}" method="post" th:action="@{/bug/change-state/__${bug.id}__/__${6}__/__${project.id}__}">
+						<button type="submit" class="btn btn-info">Reopen</button>
+					</form>
+					<form th:if="${bug.canReject}" method="post" th:action="@{/bug/change-state/__${bug.id}__/__${9}__/__${project.id}__}">
+						<button type="submit" class="btn btn-info">Deffered</button>
+					</form>
+					<form th:if="${bug.canReject}" method="post" th:action="@{/bug/change-state/__${bug.id}__/__${10}__/__${project.id}__}">
+						<button type="submit" class="btn btn-info">Not a bug</button>
+					</form>
+					<form th:if="${bug.canReject}" method="post" th:action="@{/bug/change-state/__${bug.id}__/__${7}__/__${project.id}__}">
+						<button type="submit" class="btn btn-info">Duplicate</button>
+					</form>
+				</td>
+			</tr>
+			
+		</table>
+	</div>
+	
+	<div th:if="${not #lists.isEmpty(project.history)}">
+		<h4>Project bug history:</h4>
+		<table class="table table-stripped">
+			<tr>
+				<th>Bug name</th>
+				<th>Time</th>
+				<th>New state</th>
+				<th>Person in charge</th>
+			</tr>
+			<tr th:each="his : ${project.history}">
+				<td th:text="${his.bugName}"></td>
+				<td th:text="${his.time}"></td>
+				<td th:text="${his.state}"></td>
+				<td th:text="${his.personFirstName} + ' ' + ${his.personLastName}" ></td>
+
+			</tr>
+			
+		</table>
+	</div>
+	
+	
+	
+
+	
+</div>
+
+<div th:replace="fragments/footer :: footer"/>
+
+</body>
+</html>

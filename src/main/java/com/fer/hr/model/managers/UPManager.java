@@ -73,7 +73,15 @@ public class UPManager {
 
 		try {
 			tx = session.beginTransaction();
-			session.delete(session.get(UserProject.class, key));
+			StringBuilder bob = new StringBuilder();
+			bob.append("DELETE FROM user_project ");
+			bob.append("WHERE ");
+			bob.append("user_name = :usr AND project_id = :pid ");
+			String query = bob.toString();
+			session.createNativeQuery(query)
+					.setParameter("usr", key.getUserName())
+					.setParameter("pid", key.getProjectId())
+					.executeUpdate();
 
 			tx.commit();
 		} catch (Exception e) {

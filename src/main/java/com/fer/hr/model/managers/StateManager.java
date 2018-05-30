@@ -39,7 +39,11 @@ public class StateManager {
 			bob.append(" VALUES ");
 			bob.append("(:id , :desc)");
 			String query = bob.toString();
-			id = Math.abs(r.nextInt());
+			if (state.getId() != 0) {
+				id = state.getId();
+			} else {
+				id = Math.abs(r.nextInt());
+			}
 			session.createNativeQuery(query)
 					.setParameter("id", id)
 					.setParameter("desc", state.getDescription())

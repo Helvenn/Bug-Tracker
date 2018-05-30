@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add bug</title>
+    <div th:replace="fragments/header :: header-css"/>
+</head>
+<body>
+
+<div th:replace="fragments/header :: header"/>
+
+
+<div class="container">
+<h2>Add an existing user to your project</h2>
+<form action="#" th:action="@{/proj-add-new}" th:object="${user}" method="post">
+	<input type="hidden" th:field="*{projectId}" th:value="${user.projectId}"> </input>
+	<table class="table table-stripped">
+		<tr>
+			<th>Field name</th>
+			<th>Field value</th>
+			
+		</tr>
+		<tr>
+			<td>Username</td>
+			<td>
+				 <input type="text" th:field="*{userName}"> </input>
+			</td>
+		</tr>
+		<tr>
+			<td>Role on this project</td>
+			<td>
+				    <select class="form-control" th:field="*{roleId}">
+				        <option value="" >Select Role</option>
+				        <option th:each="role : ${roles}"
+				                th:value="${role.id}"
+				                th:text="${role.name}"></option>
+				    </select>
+			</td>
+		</tr>
+			
+	</table>
+	<button type="submit" value="Submit" class="btn btn-success" >Add</button>
+</form>
+</div>
+
+
+<div th:replace="fragments/footer :: footer"/>
+
+</body>
+</html>

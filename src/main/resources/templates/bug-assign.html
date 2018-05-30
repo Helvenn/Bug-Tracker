@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add bug</title>
+    <div th:replace="fragments/header :: header-css"/>
+</head>
+<body>
+
+<div th:replace="fragments/header :: header"/>
+
+
+<div class="container">
+
+<form action="#" th:action="@{/bug/assign}" th:object="${assign}" method="post">
+	<input type="hidden" th:field="*{bugId}" th:value="${assign.bugId}"> </input>
+	<input type="hidden" th:field="*{projectId}" th:value="${assign.bugId}"> </input>
+	<h2 th:text="'Assign a develeoper to the bug no. ' + ${assign.bugId}"></h2>
+	<table class="table table-stripped">
+		<tr>
+			<th>Field name</th>
+			<th>Field value</th>
+			
+		</tr>
+		<tr>
+			<td>Developer</td>
+			<td>
+				    <select class="form-control" th:field="*{userName}">
+				        <option value="" >Select Developer</option>
+				        <option th:each="dev : ${developers}"
+				                th:value="${dev.userName}"
+				                th:text="${dev.firstName} + ' ' + ${dev.lastName}"></option>
+				    </select>
+			</td>
+		</tr>
+			
+	</table>
+	<button type="submit" value="Submit" class="btn btn-success" >Assign</button>
+</form>
+</div>
+
+
+<div th:replace="fragments/footer :: footer"/>
+
+</body>
+</html>

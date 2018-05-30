@@ -38,7 +38,11 @@ public class ImageManager {
 			bob.append(" VALUES ");
 			bob.append("(:id , :nm , :data)");
 			String query = bob.toString();
-			id = Math.abs(r.nextInt());
+			if (image.getId() != 0) {
+				id = image.getId();
+			} else {
+				id = Math.abs(r.nextInt());
+			}
 			session.createNativeQuery(query)
 					.setParameter("id", id)
 					.setParameter("nm", image.getFileName())

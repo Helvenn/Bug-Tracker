@@ -39,7 +39,11 @@ public class SeverityManager {
 			bob.append(" VALUES ");
 			bob.append("(:id , :desc)");
 			String query = bob.toString();
-			id = Math.abs(r.nextInt());
+			if (severity.getId() != 0) {
+				id = severity.getId();
+			} else {
+				id = Math.abs(r.nextInt());
+			}
 			session.createNativeQuery(query)
 					.setParameter("id", id)
 					.setParameter("desc", severity.getDescription())

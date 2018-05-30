@@ -11,7 +11,8 @@ import java.util.List;
 public class ClassReload {
 	
 	public static <E> List<E> reloadList(List<?> list){
-		String filePath = "C:/Users/Josip/Desktop/ser/a.ser";
+		//String filePath = cl.getResource("a.ser").toString().replace(oldChar, newChar);
+		String filePath = "a.ser";
 		List<E> newList = new ArrayList<E>();
 		
 		for(Object memb : list){

@@ -1,9 +1,7 @@
 package com.fer.hr.model;
 
 import java.io.Serializable;
-import java.sql.Timestamp;
 
-import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -18,15 +16,6 @@ public class UserResolvingBug implements Serializable {
 	@EmbeddedId
 	private URBKey id;
 
-	@Column(name = "time_started")
-	private Timestamp timeStarted;
-
-	@Column(name = "time_finished")
-	private Timestamp timeFinished;
-
-	@Column(name = "comment")
-	private String comment;
-
 	public URBKey getId() {
 		return id;
 	}
@@ -35,38 +24,12 @@ public class UserResolvingBug implements Serializable {
 		this.id = id;
 	}
 
-	public Timestamp getTimeStarted() {
-		return timeStarted;
-	}
-
-	public void setTimeStarted(Timestamp timeStarted) {
-		this.timeStarted = timeStarted;
-	}
-
-	public Timestamp getTimeFinished() {
-		return timeFinished;
-	}
-
-	public void setTimeFinished(Timestamp timeFinished) {
-		this.timeFinished = timeFinished;
-	}
-
-	public String getComment() {
-		return comment;
-	}
-
-	public void setComment(String comment) {
-		this.comment = comment;
-	}
 
 	public UserResolvingBug() {
 	}
 
-	public UserResolvingBug(int bugId, String userName, Timestamp timeStarted, String comment) {
+	public UserResolvingBug(int bugId, String userName) {
 		setId(new URBKey(bugId, userName));
-		setComment(comment);
-		setTimeStarted(timeStarted);
-		setTimeFinished(null);
 	}
 
 	@Override

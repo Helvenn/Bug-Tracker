@@ -15,16 +15,21 @@
 		<h2>Project list</h2>
 		<table class="table table-stripped">
 			<tr>
-				<th>Id</th>
 				<th>Name</th>
 				<th>Project Leader</th>
 				<th>Your Role</th>
+				<th>Details</th>
 			</tr>
 			<tr th:each="proj : ${projects}">
-				<td th:text="${proj.id}"></td>
 				<td th:text="${proj.name}"></td>
 				<td th:text="${proj.firstName} + ' ' + ${proj.lastName}"></td>
 				<td th:text="${proj.role}"></td>
+				<td> 
+					
+					<a th:href="@{/project-details/__${proj.id}__}">
+						<button type="button" class="btn btn-info">Details</button>
+					</a>
+				</td>
 			</tr>
 			
 		</table>

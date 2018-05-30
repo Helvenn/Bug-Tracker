@@ -33,17 +33,15 @@ public class URBManager {
 			tx = session.beginTransaction();
 			StringBuilder bob = new StringBuilder();
 			bob.append("INSERT INTO user_resolving_bug ");
-			bob.append("(bug_id, user_name, time_started, time_finished, comment)");
+			bob.append("(bug_id, user_name)");
 			bob.append(" VALUES ");
-			bob.append("(:bid, :un , :tst , :tfin , :com)");
+			bob.append("(:bid, :un)");
 			String query = bob.toString();
 			id = urb.getId();
 			session.createNativeQuery(query)
 					.setParameter("bid", urb.getId().getBugId())
 					.setParameter("un", urb.getId().getUserName())
-					.setParameter("tst", urb.getTimeStarted())
-					.setParameter("tfin", urb.getTimeFinished())
-					.setParameter("com", urb.getComment()).executeUpdate();
+					.executeUpdate();
 			
 			tx.commit();
 		} catch (Exception e) {

@@ -12,27 +12,27 @@ public class DefaultController {
 	
 	@GetMapping("/error")
 	public String error(){
-		return "/error/404";
+		return "error/404";
 	}
 
 	@GetMapping("/")
 	public String home1() {
-		return "/home";
+		return "home";
 	}
 
 	@GetMapping("/home")
 	public String home() {
-		return "/home";
+		return "home";
 	}
 
 	@GetMapping("/login")
 	public String login() {
-		return "/login";
+		return "login";
 	}
 
 	@GetMapping("/403")
 	public String error403() {
-		return "/error/403";
+		return "error/403";
 	}
 
 	@GetMapping("/list")

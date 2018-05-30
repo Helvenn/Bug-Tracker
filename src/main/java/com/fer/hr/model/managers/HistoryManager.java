@@ -1,5 +1,7 @@
 package com.fer.hr.model.managers;
 
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -9,12 +11,12 @@ import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
 import com.fer.hr.ClassReload;
-import com.fer.hr.model.*;
+import com.fer.hr.model.History;
 
-public class ProjectManager {
+public class HistoryManager {
 	private SessionFactory factory;
 
-	public ProjectManager() {
+	public HistoryManager() {
 		try {
 			factory = new Configuration().configure().buildSessionFactory();
 		} catch (Throwable ex) {
@@ -22,59 +24,28 @@ public class ProjectManager {
 			throw new ExceptionInInitializerError(ex);
 		}
 	}
-
-	public Integer add(Project project) {
+	
+	public void add(History history){
 		Session session = factory.openSession();
 		Transaction tx = null;
-		Integer id = null;
 
 		try {
 			tx = session.beginTransaction();
 			Random r = new Random(System.currentTimeMillis());
 			StringBuilder bob = new StringBuilder();
-			bob.append("INSERT INTO project ");
-			bob.append("(id, name, leader)");
+			bob.append("INSERT INTO history ");
+			bob.append("(id, bug_id, time, new_state_id, person_in_charge, project_id)");
 			bob.append(" VALUES ");
-			bob.append("(:id , :nm , :ldr)");
+			bob.append("(:id , :bid , :tm , :ns , :pic , :pid)");
 			String query = bob.toString();
-			if (project.getId() != 0) {
-				id = project.getId();
-			} else {
-				id = Math.abs(r.nextInt());
-			}
-			session.createNativeQuery(query).setParameter("id", id).setParameter("nm", project.getName())
-					.setParameter("ldr", project.getLeaderId()).executeUpdate();
-
-			tx.commit();
-		} catch (Exception e) {
-			if (tx != null)
-				tx.rollback();
-			e.printStackTrace();
-		} finally {
-			session.close();
-		}
-		return id;
-	}
-
-	public Project get(int id) {
-		Project proj = null;
-		List<Project> all = getAll();
-		for (Project b : all) {
-			if (b.getId() == id) {
-				proj = b;
-				break;
-			}
-		}
-		return proj;
-	}
-
-	public void delete(int id) {
-		Session session = factory.openSession();
-		Transaction tx = null;
-
-		try {
-			tx = session.beginTransaction();
-			session.delete(session.get(Project.class, id));
+			int id = Math.abs(r.nextInt());
+			session.createNativeQuery(query)
+					.setParameter("id", id)
+					.setParameter("bid", history.getBugId())
+					.setParameter("tm", history.getTime())
+					.setParameter("ns", history.getNewState())
+					.setParameter("pid", history.getProjectId())
+					.setParameter("pic", history.getPersonInCharge()).executeUpdate();
 
 			tx.commit();
 		} catch (Exception e) {
@@ -85,20 +56,25 @@ public class ProjectManager {
 			session.close();
 		}
 	}
-
-	public void update(Project proj) {
-		delete(proj.getId());
-		add(proj);
+	
+	public List<History> getByBug(int bugId){
+		List<History> his = new ArrayList<>();
+		List<History> list = getAll();
+		for (History h : list){
+			if(h.getBugId() == bugId)
+				his.add(h);
+		}
+		return his;
 	}
-
-	public List<Project> getAll() {
+	
+	public List<History> getAll(){
 		Session session = factory.openSession();
 		Transaction tx = null;
-		List<Project> list = null;
+		List<History> list = new ArrayList<>();
 
 		try {
 			tx = session.beginTransaction();
-			String query = "FROM Project";
+			String query = "FROM History";
 			list = ClassReload.reloadList(session.createQuery(query).list());
 
 			tx.commit();
@@ -111,5 +87,36 @@ public class ProjectManager {
 		}
 		return list;
 	}
+	
+	public void delete(int id){
+		Session session = factory.openSession();
+		Transaction tx = null;
 
+		try {
+			tx = session.beginTransaction();
+			session.delete(session.get(History.class, id));
+
+			tx.commit();
+		} catch (Exception e) {
+			if (tx != null)
+				tx.rollback();
+			e.printStackTrace();
+		} finally {
+			session.close();
+		}
+	}
+
+	public List<History> getByProject(int projectId){
+		List<History> his = new ArrayList<>();
+		List<History> all = getAll();
+		
+		for(History h : all){
+			if (h.getProjectId() == projectId){
+				his.add(h);
+			}
+		}
+
+		return his;
+	}
+	
 }

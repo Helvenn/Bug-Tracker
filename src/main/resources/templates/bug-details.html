@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Project details </title>
+    <div th:replace="fragments/header :: header-css"/>
+</head>
+<body>
+
+<div th:replace="fragments/header :: header"/>
+
+
+
+<div class="container">
+
+	<h2 th:text="'Showing details for bug ' + ${name}"></h2>
+	
+	<div >
+		<h4>Defect details:</h4>
+		<table class="table table-stripped">
+			<tr>
+				<td>Defect opened by</td>
+				<td th:text="${bug.name}"></td>
+			</tr>
+			
+			<tr>
+				<td>Bug name</td>
+				<td th:text="${bug.name}"></td>
+			</tr>
+			<tr>
+				<td>Bug description</td>
+				<td th:text="${bug.description}"></td>
+			</tr>
+			<tr>
+				<td>Time added</td>
+				<td th:text="${bug.timeAdded}"></td>
+			</tr>
+			<tr>
+				<td>Time resolved</td>
+				<td th:text="${bug.timeResolved}"></td>
+			</tr>
+			<tr>
+				<td>State</td>
+				<td th:text="${state}"></td>
+			</tr>
+			<tr>
+				<td>Severity</td>
+				<td th:text="${severity}"></td>
+			</tr>
+			<tr>
+				<td>Category</td>
+				<td th:text="${category}"></td>
+			</tr>
+			
+			
+		</table>
+	</div>
+	
+	<div th:if="${not #lists.isEmpty(users)}">
+		<h4>Developers working on this bug:</h4>
+		<table class="table table-stripped">
+			<tr>
+				<th>Username</th>
+				<th>Full name</th>
+			</tr>
+			<tr th:each="usr : ${users}">
+				<td th:text="${usr.userName}"></td>
+				<td th:text="${usr.firstName} + ' ' + ${usr.lastName}"></td>
+			</tr>
+			
+		</table>
+	</div>
+	
+	<div th:if="${not #lists.isEmpty(history)}">
+		<h4>Project bug history:</h4>
+		<table class="table table-stripped">
+			<tr>
+				<th>Time</th>
+				<th>New state</th>
+				<th>Person in charge</th>
+			</tr>
+			<tr th:each="his : ${history}">
+				<td th:text="${his.time}"></td>
+				<td th:text="${his.state}"></td>
+				<td th:text="${his.personFirstName} + ' ' + ${his.personLastName}" ></td>
+
+			</tr>
+			
+		</table>
+	</div>
+	
+
+	
+</div>
+
+<div th:replace="fragments/footer :: footer"/>
+
+</body>
+</html>

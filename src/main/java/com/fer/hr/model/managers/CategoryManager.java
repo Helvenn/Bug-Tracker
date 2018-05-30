@@ -39,7 +39,11 @@ public class CategoryManager {
 			bob.append(" VALUES ");
 			bob.append("(:id , :desc)");
 			String query = bob.toString();
-			id = Math.abs(r.nextInt());
+			if (category.getId() != 0) {
+				id = category.getId();
+			} else {
+				id = Math.abs(r.nextInt());
+			}
 			session.createNativeQuery(query)
 					.setParameter("id", id)
 					.setParameter("desc", category.getDescription())

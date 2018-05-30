@@ -39,7 +39,11 @@ public class RoleManager {
 			bob.append(" VALUES ");
 			bob.append("(:id , :nm)");
 			String query = bob.toString();
-			id = Math.abs(r.nextInt());
+			if (role.getId() != 0) {
+				id = role.getId();
+			} else {
+				id = Math.abs(r.nextInt());
+			}
 			session.createNativeQuery(query)
 					.setParameter("id", id)
 					.setParameter("nm", role.getName()).executeUpdate();

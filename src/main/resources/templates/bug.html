@@ -15,7 +15,6 @@
 		<h2>Bug list</h2>
 		<table class="table table-stripped">
 			<tr>
-				<th>Id</th>
 				<th>Name</th>
 				<th>Description</th>
 				<th>Time Added</th>
@@ -24,10 +23,9 @@
 				<th>Severity</th>
 				<th>State</th>
 				<th>Project</th>
-				<th>Delete</th>
+				<th>Actions</th>
 			</tr>
 			<tr th:each="bug : ${bugs}">
-				<td th:text="${bug.id}"></td>
 				<td th:text="${bug.name}"></td>
 				<td th:text="${bug.description}"></td>
 				<td th:text="${bug.timeAdded}"></td>
@@ -38,9 +36,17 @@
 				<td th:text="${bug.project}"></td>
 				<td> 
 					
-					<form method="post" th:action="@{/bug/delete/__${bug.id}__}">
+					<form th:if="${bug.canDelete}" method="post" th:action="@{/bug/delete/__${bug.id}__}">
 						<button type="submit" class="btn btn-danger">Delete</button>
 					</form>
+					<!--
+					<form th:if="${bug.canRetest}" method="post" th:action="@{/bug/reopen/__${bug.id}__}">
+						<button type="submit" class="btn btn-warning">Reopen</button>
+					</form>
+					<form th:if="${bug.canRetest}" method="post" th:action="@{/bug/close/__${bug.id}__}">
+						<button type="submit" class="btn btn-success">Close</button>
+					</form>
+					-->
 				</td>
 			</tr>
 			

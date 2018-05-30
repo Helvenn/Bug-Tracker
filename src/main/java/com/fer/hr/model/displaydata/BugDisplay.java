@@ -3,6 +3,8 @@ package com.fer.hr.model.displaydata;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
+import com.fer.hr.model.defaultIds.DefaultState;
+
 public class BugDisplay implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -15,6 +17,79 @@ public class BugDisplay implements Serializable {
 	private String severity;
 	private String state;
 	private String project;
+	private boolean canDelete;
+	private boolean canAssign;
+	private boolean canOpen;
+	private boolean canFix;
+	private boolean canRetest;
+	private boolean canVerify;
+	private boolean canClose;
+	private boolean canReopen;
+	private boolean canReject;
+
+	public boolean isCanDelete() {
+		return canDelete;
+	}
+
+	public boolean isCanAssign() {
+		return canAssign;
+	}
+
+	public void setCanAssign(boolean canAssign) {
+		this.canAssign = canAssign;
+	}
+
+	public boolean isCanOpen() {
+		return canOpen;
+	}
+
+	public void setCanOpen(boolean canOpen) {
+		this.canOpen = canOpen;
+	}
+
+	public boolean isCanFix() {
+		return canFix;
+	}
+
+	public void setCanFix(boolean canFix) {
+		this.canFix = canFix;
+	}
+
+	public boolean isCanVerify() {
+		return canVerify;
+	}
+
+	public void setCanVerify(boolean canVerify) {
+		this.canVerify = canVerify;
+	}
+
+	public boolean isCanClose() {
+		return canClose;
+	}
+
+	public void setCanClose(boolean canClose) {
+		this.canClose = canClose;
+	}
+
+	public boolean isCanReopen() {
+		return canReopen;
+	}
+
+	public void setCanReopen(boolean canReopen) {
+		this.canReopen = canReopen;
+	}
+
+	public boolean isCanReject() {
+		return canReject;
+	}
+
+	public void setCanReject(boolean canReject) {
+		this.canReject = canReject;
+	}
+
+	public void setCanDelete(boolean canDelete) {
+		this.canDelete = canDelete;
+	}
 
 	public int getId() {
 		return id;
@@ -88,6 +163,14 @@ public class BugDisplay implements Serializable {
 		this.project = project;
 	}
 
+	public boolean isCanRetest() {
+		return canRetest;
+	}
+
+	public void setCanRetest(boolean canRetest) {
+		this.canRetest = canRetest;
+	}
+
 	public BugDisplay() {
 	}
 
@@ -102,6 +185,15 @@ public class BugDisplay implements Serializable {
 		this.severity = severity;
 		this.state = state;
 		this.project = project;
+		this.canDelete = this.state.equals(DefaultState.NEW_TEXT);
+		this.canRetest = false;
+		this.canAssign = false;
+		this.canOpen = false;
+		this.canFix = false;
+		this.canVerify = false;
+		this.canClose = false;
+		this.canReopen = false;
+		this.canReject = false;
 	}
 
 	@Override
@@ -125,7 +217,5 @@ public class BugDisplay implements Serializable {
 			return false;
 		return true;
 	}
-	
-	
 
 }

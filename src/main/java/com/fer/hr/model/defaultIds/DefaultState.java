@@ -43,6 +43,9 @@ public class DefaultState {
 	public static final int CLOSED = 12;
 	public static final String CLOSED_TEXT = "Closed";
 	
+	public static final int DELETED = 13;
+	public static final String DELETED_TEXT = "Deleted";
+	
 	public static String getById(int stateId) {
 		switch (stateId){
 		case ASSIGNED:
@@ -69,6 +72,8 @@ public class DefaultState {
 			return VERIFIED_TEXT;
 		case CLOSED:
 			return CLOSED_TEXT;
+		case DELETED:
+			return DELETED_TEXT;
 		default:
 			return NEW_TEXT;
 		}

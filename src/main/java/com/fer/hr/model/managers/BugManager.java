@@ -26,8 +26,6 @@ public class BugManager {
 	}
 
 	public List<Bug> getByUser(String userName) {
-		Session session = factory.openSession();
-		Transaction tx = null;
 		List<Bug> bugs = new ArrayList<>();
 		if (userName == null){
 			return bugs;
@@ -35,21 +33,12 @@ public class BugManager {
 		if (userName.isEmpty()) {
 			return bugs;
 		}
-		try {
-			tx = session.beginTransaction();
-			List<Bug> all = getAll();
-			for (Bug b : all){
-				if (b.getUserName().equals(userName))
-					bugs.add(b);
-			}
-			tx.commit();
-		} catch (Exception e) {
-			if (tx != null)
-				tx.rollback();
-			e.printStackTrace();
-		} finally {
-			session.close();
+		List<Bug> all = getAll();
+		for (Bug b : all){
+			if (b.getUserName().equals(userName))
+				bugs.add(b);
 		}
+
 		return bugs;
 	}
 	
@@ -65,19 +54,44 @@ public class BugManager {
 			bob.append("INSERT INTO bug ");
 			bob.append("(id, user_name, name, description, time_added, time_resolved, image_id, category_id, severity_id, state_id, project_id)");
 			bob.append(" VALUES ");
-			bob.append("(:id , :usr , :nm , :desc , :ta , null , null , :cid , :sevid , :stid , :pid)");
+			bob.append("(:id , :usr , :nm , :desc , :ta ,");
+			if (bug.getTimeResolved() == null){
+				bob.append(" null ");
+			} else {
+				bob.append(" :tr ");
+			}
+			bob.append(", null , :cid , :sevid , :stid , :pid)");
 			String query = bob.toString();
-			id = Math.abs(r.nextInt());
-			session.createNativeQuery(query)
-					.setParameter("id", id)
-					.setParameter("usr", bug.getUserName())
-					.setParameter("nm", bug.getName())
-					.setParameter("desc", bug.getDescription())
-					.setParameter("ta", bug.getTimeAdded())
-					.setParameter("cid", bug.getCategoryId())
-					.setParameter("sevid", bug.getSeverityId())
-					.setParameter("stid", bug.getStateId())
-					.setParameter("pid", bug.getProjectId()).executeUpdate();
+			if (bug.getId() != 0) {
+				id = bug.getId();
+			} else {
+				id = Math.abs(r.nextInt());
+			}
+			if (bug.getTimeResolved() == null){
+				session.createNativeQuery(query)
+				.setParameter("id", id)
+				.setParameter("usr", bug.getUserName())
+				.setParameter("nm", bug.getName())
+				.setParameter("desc", bug.getDescription())
+				.setParameter("ta", bug.getTimeAdded())
+				.setParameter("cid", bug.getCategoryId())
+				.setParameter("sevid", bug.getSeverityId())
+				.setParameter("stid", bug.getStateId())
+				.setParameter("pid", bug.getProjectId()).executeUpdate();
+			} else {
+				session.createNativeQuery(query)
+				.setParameter("id", id)
+				.setParameter("usr", bug.getUserName())
+				.setParameter("nm", bug.getName())
+				.setParameter("desc", bug.getDescription())
+				.setParameter("ta", bug.getTimeAdded())
+				.setParameter("cid", bug.getCategoryId())
+				.setParameter("sevid", bug.getSeverityId())
+				.setParameter("stid", bug.getStateId())
+				.setParameter("tr", bug.getTimeResolved())
+				.setParameter("pid", bug.getProjectId()).executeUpdate();
+			}
+			
 			
 			tx.commit();
 		} catch (Exception e) {
